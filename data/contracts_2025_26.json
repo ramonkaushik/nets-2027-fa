@@ -1,0 +1,138 @@
+{
+  "_notes": "Salaries hardcoded for Stage 1. Sources: Spotrac/HoopsHype as of summer 2025. Verify before using for cap analysis. option_type: none|player|team. years_left = years remaining after 2025-26.",
+  "season": "2025-26",
+  "cap_constants": {
+    "salary_cap": 141000000,
+    "tax_line": 171300000,
+    "first_apron": 178132000,
+    "second_apron": 188932000
+  },
+  "contracts": [
+    {
+      "name": "Nic Claxton",
+      "salary": 26635750,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 26635750
+    },
+    {
+      "name": "Michael Porter Jr.",
+      "salary": 35417606,
+      "years_left": 1,
+      "option_type": "player",
+      "guaranteed": 35417606
+    },
+    {
+      "name": "Terance Mann",
+      "salary": 14000000,
+      "years_left": 1,
+      "option_type": "team",
+      "guaranteed": 7000000
+    },
+    {
+      "name": "Noah Clowney",
+      "salary": 7806600,
+      "years_left": 1,
+      "option_type": "team",
+      "guaranteed": 7806600
+    },
+    {
+      "name": "Ochai Agbaji",
+      "salary": 9761539,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 9761539
+    },
+    {
+      "name": "Day'Ron Sharpe",
+      "salary": 7700000,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 7700000
+    },
+    {
+      "name": "Ziaire Williams",
+      "salary": 11000000,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 11000000
+    },
+    {
+      "name": "Egor Demin",
+      "salary": 9773920,
+      "years_left": 3,
+      "option_type": "team",
+      "guaranteed": 9773920
+    },
+    {
+      "name": "Nolan Traore",
+      "salary": 8374440,
+      "years_left": 3,
+      "option_type": "team",
+      "guaranteed": 8374440
+    },
+    {
+      "name": "Drake Powell",
+      "salary": 6550280,
+      "years_left": 3,
+      "option_type": "team",
+      "guaranteed": 6550280
+    },
+    {
+      "name": "Danny Wolf",
+      "salary": 2221320,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 2221320
+    },
+    {
+      "name": "Ben Saraf",
+      "salary": 2221320,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 2221320
+    },
+    {
+      "name": "Josh Minott",
+      "salary": 4500000,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 4500000
+    },
+    {
+      "name": "Jalen Wilson",
+      "salary": 2019706,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 2019706
+    },
+    {
+      "name": "Tyson Etienne",
+      "salary": 2019706,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 2019706
+    },
+    {
+      "name": "Malachi Smith",
+      "salary": 1164865,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 1164865
+    },
+    {
+      "name": "Chaney Johnson",
+      "salary": 1164865,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 1164865
+    },
+    {
+      "name": "E.J. Liddell",
+      "salary": 2019706,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 2019706
+    }
+  ]
+}

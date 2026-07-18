@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-border-beam: border-beam 12s linear infinite;
+  --animate-meteor: meteor 6s linear infinite;
+  --animate-gradient: gradient 6s linear infinite;
+  --animate-fade-up: fade-up 0.5s ease forwards;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes border-beam {
+  100% { offset-distance: 100%; }
+}
+
+@keyframes meteor {
+  0%   { transform: rotate(215deg) translateX(0); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: rotate(215deg) translateX(-600px); opacity: 0; }
+}
+
+@keyframes gradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+* { scrollbar-width: thin; scrollbar-color: #3f3f46 transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+
+body {
+  margin: 0;
+  background: #080808;
+  font-feature-settings: 'tnum' 1;
+}

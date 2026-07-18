@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Data cache (large API responses — regenerate with pipeline scripts)
+data/cache/
+
+# DB is checked in (read-only, ships with the server container)
+# data/nets.db  ← intentionally NOT ignored
+
+# Node
+server/node_modules/
+ui/node_modules/
+
+# Vite build output
+ui/dist/
+
+# Env files
+.env
+.env.local
+
+# macOS
+.DS_Store

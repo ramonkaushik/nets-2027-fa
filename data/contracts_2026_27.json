@@ -1,0 +1,165 @@
+{
+  "_notes": "Salaries from Spotrac July 2026. Rookie scale year-N salaries computed from 4yr total assuming 8%/yr escalation. FA deals assumed flat AAV unless structured. Two-ways at stated amounts.",
+  "season": "2026-27",
+  "cap_constants": {
+    "salary_cap": 148000000,
+    "tax_line": 180500000,
+    "first_apron": 187600000,
+    "second_apron": 198400000,
+    "_note": "2026-27 cap estimated — verify against NBPA memo when released"
+  },
+  "contracts": [
+    {
+      "name": "Michael Porter Jr.",
+      "salary": 35859950,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 35859950,
+      "_note": "Year 5 of 5yr extension signed 2022. Final year."
+    },
+    {
+      "name": "Julius Randle",
+      "salary": 33333333,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 33333333,
+      "_note": "3yr/$100M FA deal signed 2025. Year 2 of 3."
+    },
+    {
+      "name": "Terance Mann",
+      "salary": 15666667,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 15666667,
+      "_note": "3yr/$47M extension signed 2025. Year 2 of 3."
+    },
+    {
+      "name": "Day'Ron Sharpe",
+      "salary": 10000000,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 10000000,
+      "_note": "2yr/$20M FA deal signed 2026. Year 1 of 2."
+    },
+    {
+      "name": "Keon Ellis",
+      "salary": 9000000,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 9000000,
+      "_note": "2yr/$18M FA deal signed 2026. Year 1 of 2."
+    },
+    {
+      "name": "Mikel Brown Jr.",
+      "salary": 8862857,
+      "years_left": 3,
+      "option_type": "team",
+      "guaranteed": 8862857,
+      "_note": "4yr/$39.9M rookie deal 2026. Year 1. Scale computed from total/4.506."
+    },
+    {
+      "name": "Egor Demin",
+      "salary": 7511005,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 7511005,
+      "_note": "4yr/$31.3M rookie deal 2025. Year 2. Year1=$6,955,560 * 1.08."
+    },
+    {
+      "name": "Noah Clowney",
+      "salary": 4234103,
+      "years_left": 0,
+      "option_type": "team",
+      "guaranteed": 4234103,
+      "_note": "4yr/$15.1M rookie deal 2023. Year 4 (team option). Final year."
+    },
+    {
+      "name": "Nolan Traore",
+      "salary": 4425095,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 4425095,
+      "_note": "4yr/$18.5M rookie deal 2025. Year 2. Year1=$4,097,310 * 1.08."
+    },
+    {
+      "name": "Josh Minott",
+      "salary": 4500000,
+      "years_left": 1,
+      "option_type": "none",
+      "guaranteed": 4500000,
+      "_note": "2yr/$9M FA deal signed 2026. Year 1 of 2."
+    },
+    {
+      "name": "Drake Powell",
+      "salary": 4008213,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 4008213,
+      "_note": "4yr/$16.7M rookie deal 2025. Year 2. Year1=$3,711,308 * 1.08."
+    },
+    {
+      "name": "Ben Saraf",
+      "salary": 3548697,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 3548697,
+      "_note": "4yr/$14.8M rookie deal 2025. Year 2. Year1=$3,285,831 * 1.08."
+    },
+    {
+      "name": "Danny Wolf",
+      "salary": 3447538,
+      "years_left": 2,
+      "option_type": "team",
+      "guaranteed": 3447538,
+      "_note": "4yr/$14.4M rookie deal 2025. Year 2. Year1=$3,192,165 * 1.08."
+    },
+    {
+      "name": "Joshua Jefferson",
+      "salary": 3384747,
+      "years_left": 3,
+      "option_type": "team",
+      "guaranteed": 3384747,
+      "_note": "4yr/$15.3M rookie deal 2026. Year 1."
+    },
+    {
+      "name": "E.J. Liddell",
+      "salary": 2300000,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 2300000,
+      "_note": "Veteran minimum estimate. Verify."
+    },
+    {
+      "name": "Tyson Etienne",
+      "salary": 2300000,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 2300000,
+      "_note": "Veteran minimum estimate. Verify."
+    },
+    {
+      "name": "Jalen Wilson",
+      "salary": 2300000,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 2300000,
+      "_note": "Veteran minimum estimate. Verify."
+    },
+    {
+      "name": "Chaney Johnson",
+      "salary": 679042,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 91000,
+      "_note": "Two-way contract 2026-27."
+    },
+    {
+      "name": "Tyler Bilodeau",
+      "salary": 678882,
+      "years_left": 0,
+      "option_type": "none",
+      "guaranteed": 91000,
+      "_note": "Two-way contract 2026-27."
+    }
+  ]
+}
