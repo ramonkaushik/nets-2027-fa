@@ -127,12 +127,15 @@ export default function App() {
   const { data: fas, loading: fLoad } = useApi<FreeAgent[]>(faUrl)
 
   // ── builder state ──────────────────────────────────────────────────────────
+  // All scenario state lives here — nothing is written back to the DB.
   const [removedIds, setRemovedIds] = useState<Set<number>>(new Set())
   const [signings,   setSignings]   = useState<Signing[]>([])
-  const [signTarget, setSignTarget] = useState<FreeAgent | null>(null)
+  const [signTarget, setSignTarget] = useState<FreeAgent | null>(null) // controls the sign modal
 
   const signingIds = useMemo(() => new Set(signings.map(s => s.player.id)), [signings])
 
+  // workingRoster = base roster minus released players, plus any signed FAs.
+  // years_left is decremented by 1 because the signing starts this season.
   const workingRoster = useMemo((): Player[] => {
     const base  = (roster ?? []).filter(p => !removedIds.has(p.id))
     const added = signings.map(s => ({
@@ -144,6 +147,9 @@ export default function App() {
     return [...base, ...added]
   }, [roster, removedIds, signings])
 
+  // Cap numbers are recalculated client-side on every roster change —
+  // no round-trip needed since the thresholds are already fetched and the
+  // math is just a reduce over ~15 rows.
   const computedCap = useMemo((): CapSummary | null => {
     if (!cap) return null
     const committed = workingRoster.reduce((s, p) => s + (p.salary ?? 0), 0)
@@ -250,14 +256,16 @@ export default function App() {
               <StatTable
                 rows={workingRoster}
                 cols={ROSTER_COLS}
+                // Key includes 's'/'o' suffix so React re-renders when a player
+        // moves from "original" to "signed" status within the same table.
                 rowKey={r => `${r.id}-${signingIds.has(r.id) ? 's' : 'o'}`}
                 highlight={r =>
                   signingIds.has(r.id)
-                    ? 'bg-indigo-950/30'
+                    ? 'bg-indigo-950/30'  // just signed from FA pool
                     : r.years_left === 0
-                    ? 'bg-amber-950/30'
+                    ? 'bg-amber-950/30'   // expiring this season
                     : (r.years_left ?? 99) >= 3
-                    ? 'bg-emerald-950/20'
+                    ? 'bg-emerald-950/20' // locked in long-term
                     : ''
                 }
                 renderActions={r =>

@@ -45,6 +45,10 @@ def fetch_league_stats(season: str, measure_type: str) -> list[dict]:
     key = f"leaguedash_{measure_type}_{season}"
 
     def _fetch():
+        # LeagueDashPlayerStats returns every player in the league — we filter
+        # to Nets players afterwards using the player IDs from CommonTeamRoster.
+        # The trailing zeros/N's are required boilerplate; the API rejects calls
+        # that leave them out even though they're semantically "no filter".
         r = LeagueDashPlayerStats(
             season=season,
             measure_type_detailed_defense=measure_type,
@@ -111,7 +115,7 @@ def load_season(season: str):
                 name,
                 position,
                 player.get('AGE'),
-                player.get('EXP') if player.get('EXP') != 'R' else 0,
+                player.get('EXP') if player.get('EXP') != 'R' else 0,  # 'R' = rookie
             ),
         )
 
@@ -150,7 +154,7 @@ def load_season(season: str):
                 base.get('FG_PCT'), base.get('FG3_PCT'), base.get('FG3A'),
                 base.get('FT_PCT'),
                 adv.get('TS_PCT'), adv.get('EFG_PCT'), adv.get('USG_PCT'),
-                None, None, None, None,  # pts_per_75, per, bpm, vorp — not in nba_api
+                None, None, None, None,  # pts_per_75/per/bpm/vorp come from BRef scrape, not nba_api
             ),
         )
 

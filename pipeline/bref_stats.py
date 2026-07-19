@@ -7,8 +7,6 @@ resolved rather than silently dropping them.
 """
 
 import io
-import re
-import unicodedata
 import time
 
 import pandas as pd
@@ -16,6 +14,7 @@ import requests
 
 from db.init_db import get_connection
 from pipeline.cache import fetch_with_cache
+from pipeline.utils import normalize_name
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
 
@@ -29,7 +28,9 @@ BREF_YEAR = {
 # Manual overrides for BRef names that don't ASCII-normalize cleanly.
 # Key = BRef raw name, Value = normalized target to match against our DB.
 NAME_OVERRIDES = {
-    'Egor Dёmin': 'egor demin',   # Cyrillic ё strips to nothing; map manually
+    # Cyrillic ё has no ASCII equivalent — NFKD strips it entirely, turning
+    # "Dёmin" into "dmin". Override before normalization runs.
+    'Egor Dёmin': 'egor demin',
 }
 
 
@@ -38,19 +39,14 @@ def _bref_url(year: int, table: str) -> str:
 
 
 def _normalize(name: str) -> str:
-    """Lowercase ASCII, strip suffixes and punctuation."""
-    override = NAME_OVERRIDES.get(name)
-    if override:
-        return override
-    nfkd = unicodedata.normalize('NFKD', str(name))
-    ascii_ = nfkd.encode('ascii', 'ignore').decode()
-    ascii_ = re.sub(r"\b(jr|sr|ii|iii|iv)\.?", '', ascii_, flags=re.IGNORECASE)
-    return ' '.join(ascii_.lower().split())
+    # Check manual overrides before running normalization — some names have
+    # characters (e.g. Cyrillic ё) that don't survive ASCII conversion cleanly.
+    return NAME_OVERRIDES.get(name) or normalize_name(name)
 
 
 def _fetch_bref_table(url: str, cache_key: str) -> pd.DataFrame:
     def _get():
-        time.sleep(3)  # BRef rate limit — be polite
+        time.sleep(3)  # BRef's ToS asks for a 3-second delay between requests
         r = requests.get(url, headers=HEADERS, timeout=20)
         r.raise_for_status()
         r.encoding = 'utf-8'
@@ -59,7 +55,8 @@ def _fetch_bref_table(url: str, cache_key: str) -> pd.DataFrame:
 
     raw = fetch_with_cache(cache_key, _get)
     df = pd.DataFrame(raw)
-    # BRef embeds repeated header rows as data rows — drop them
+    # BRef repeats the header row every 20 rows in the HTML table as a visual
+    # aid — those rows land in the DataFrame with 'Player' == 'Player'.
     df = df[df['Player'] != 'Player'].copy()
     return df
 
@@ -123,6 +120,9 @@ def load_bref_stats(season: str):
         bpm_val = _float(adv.get('BPM')) if adv else None
         vorp_val = _float(adv.get('VORP')) if adv else None
         pts100 = _float(per100.get('PTS')) if per100 else None
+        # BRef's per-100 table = stats per 100 team possessions.
+        # 75 possessions is a typical player's individual share per game,
+        # so pts_per_75 is a more intuitive "points per game if usage were average".
         pts_per_75 = round(pts100 * 0.75, 2) if pts100 is not None else None
 
         conn.execute(

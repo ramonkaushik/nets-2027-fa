@@ -25,11 +25,13 @@ def save(key: str, data):
 
 
 def fetch_with_cache(key: str, fetch_fn, delay: float = 1.0):
-    """Return cached data if available; otherwise call fetch_fn(), cache, and return."""
+    # Skip the network entirely if we already have this response on disk.
+    # NBA.com and BRef rate-limit aggressively; re-fetching on every run
+    # risks getting blocked and wastes several seconds per call.
     cached = load(key)
     if cached is not None:
         return cached
-    time.sleep(delay)  # polite rate-limit before hitting the API
+    time.sleep(delay)  # be polite — space out requests before hitting the API
     data = fetch_fn()
     save(key, data)
     return data

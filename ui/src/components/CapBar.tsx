@@ -41,6 +41,8 @@ function StatCard({ label, value, sub, warn, accent, beam }: CardProps) {
 }
 
 export function CapBar({ cap }: { cap: CapSummary }) {
+  // Scale the bar so the 2nd apron sits at ~94% width, leaving a little
+  // breathing room on the right even when the team is right at the line.
   const max = cap.second_apron * 1.06
   const pct = (n: number) => `${Math.min((n / max) * 100, 100).toFixed(2)}%`
 

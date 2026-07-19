@@ -28,6 +28,8 @@ export function StatTable<T>({ rows, cols, rowKey, highlight, renderActions }: P
   const [sortKey, setSortKey] = useState<keyof T | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
+  // Null values sort last in both directions — -Infinity pushes them to the
+  // bottom whether we're going desc (best first) or asc (worst first).
   const sorted = sortKey
     ? [...rows].sort((a, b) => {
         const av = a[sortKey] ?? -Infinity

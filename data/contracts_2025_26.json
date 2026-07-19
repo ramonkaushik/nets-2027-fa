@@ -1,12 +1,6 @@
 {
   "_notes": "Salaries hardcoded for Stage 1. Sources: Spotrac/HoopsHype as of summer 2025. Verify before using for cap analysis. option_type: none|player|team. years_left = years remaining after 2025-26.",
   "season": "2025-26",
-  "cap_constants": {
-    "salary_cap": 141000000,
-    "tax_line": 171300000,
-    "first_apron": 178132000,
-    "second_apron": 188932000
-  },
   "contracts": [
     {
       "name": "Nic Claxton",

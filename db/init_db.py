@@ -1,3 +1,7 @@
+"""
+Declares Schema and connects to SQLite DB
+"""
+
 import sqlite3
 import os
 
@@ -45,6 +49,9 @@ CREATE TABLE IF NOT EXISTS stats (
     per           REAL,
     bpm           REAL,
     vorp          REAL,
+    e_off_rating  REAL,
+    e_def_rating  REAL,
+    e_net_rating  REAL,
     PRIMARY KEY (player_id, season),
     FOREIGN KEY (player_id) REFERENCES players(id)
 );
@@ -58,14 +65,6 @@ CREATE TABLE IF NOT EXISTS free_agents (
     PRIMARY KEY (player_id, season),
     FOREIGN KEY (player_id) REFERENCES players(id)
 );
-
-CREATE TABLE IF NOT EXISTS cap_constants (
-    season        TEXT PRIMARY KEY,
-    salary_cap    INTEGER,
-    tax_line      INTEGER,
-    first_apron   INTEGER,
-    second_apron  INTEGER
-);
 """
 
 
@@ -76,7 +75,7 @@ def get_db_path():
 def get_connection():
     path = get_db_path()
     conn = sqlite3.connect(path)
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row  # lets callers do row['salary'] instead of row[2]
     return conn
 
 

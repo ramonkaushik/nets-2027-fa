@@ -13,6 +13,7 @@ import time
 from nba_api.stats.endpoints import CommonTeamRoster
 from db.init_db import get_connection, init_db
 from pipeline.cache import fetch_with_cache
+from pipeline.utils import normalize_name
 
 SEASON_NEW = '2026-27'
 SEASON_OLD = '2025-26'
@@ -30,6 +31,9 @@ NEW_PLAYER_IDS = {
 # Contracts for players whose multi-year deals carry into 2026-27.
 # Salaries are year-2 (or later) values from original deal.
 # Rookie scale years escalate ~8%/yr; veteran deals flat unless structured.
+# Salaries sourced from Spotrac. years_left = years remaining AFTER 2026-27.
+# Rookie scale deals (Demin, Traore, Powell, Wolf, Saraf) carry team options;
+# veteran deals (MPJ, Mann, Clowney, Sharpe) expire after this season.
 CARRIED_CONTRACTS = {
     'Michael Porter Jr.': {'salary': 35417606, 'years_left': 0, 'option_type': 'none',  'guaranteed': 35417606},
     'Terance Mann':        {'salary': 14000000, 'years_left': 0, 'option_type': 'none',  'guaranteed': 14000000},
@@ -40,14 +44,6 @@ CARRIED_CONTRACTS = {
     'Drake Powell':        {'salary':  7074302, 'years_left': 2, 'option_type': 'team',  'guaranteed':  7074302},
     'Danny Wolf':          {'salary':  2393066, 'years_left': 1, 'option_type': 'team',  'guaranteed':  2393066},
     'Ben Saraf':           {'salary':  2393066, 'years_left': 1, 'option_type': 'team',  'guaranteed':  2393066},
-}
-
-# 2026-27 cap constants (estimated — verify against NBPA/league memo)
-CAP_CONSTANTS_2026_27 = {
-    'salary_cap':    148000000,
-    'tax_line':      180500000,
-    'first_apron':   187600000,
-    'second_apron':  198400000,
 }
 
 
@@ -134,41 +130,23 @@ def run():
     if stats_missing:
         print(f"No 2025-26 stats found for: {stats_missing} (rookies / overseas)")
 
-    # --- seed cap constants ---
-    cc = CAP_CONSTANTS_2026_27
-    conn.execute(
-        """
-        INSERT INTO cap_constants (season, salary_cap, tax_line, first_apron, second_apron)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(season) DO UPDATE SET
-            salary_cap=excluded.salary_cap, tax_line=excluded.tax_line,
-            first_apron=excluded.first_apron, second_apron=excluded.second_apron
-        """,
-        (SEASON_NEW, cc['salary_cap'], cc['tax_line'], cc['first_apron'], cc['second_apron']),
-    )
-
     # --- build name → id map ---
     db_players = conn.execute("SELECT id, name FROM players").fetchall()
-    import re, unicodedata
-    def norm(n):
-        nfkd = unicodedata.normalize('NFKD', str(n))
-        a = nfkd.encode('ascii','ignore').decode()
-        a = re.sub(r'\b(jr|sr|ii|iii|iv)\.?', '', a, flags=re.IGNORECASE)
-        return ' '.join(a.lower().split())
-    name_to_id = {norm(p['name']): p['id'] for p in db_players}
+    name_to_id = {normalize_name(p['name']): p['id'] for p in db_players}
 
     # --- load carried-over contracts ---
     unknown_contracts = []
     for p in roster:
         pname = p['PLAYER']
-        key   = norm(pname)
+        key   = normalize_name(pname)
         pid   = name_to_id.get(key)
         if pid is None:
             continue
 
-        carried = CARRIED_CONTRACTS.get(pname) or CARRIED_CONTRACTS.get(norm(pname))
+        carried = CARRIED_CONTRACTS.get(pname) or CARRIED_CONTRACTS.get(normalize_name(pname))
         # also check Demin alias
         if carried is None and 'demin' in key:
+            # Roster returns "Egor Dёmin" (Cyrillic ё); dict key is "Egor Demin"
             carried = CARRIED_CONTRACTS.get('Egor Demin')
 
         if carried:
@@ -189,10 +167,10 @@ def run():
     conn.commit()
     conn.close()
 
-    print(f"\nContracts with unknown 2026-27 value (new signings / re-signed expirings):")
-    for name in unknown_contracts:
-        print(f"  {name}")
-    print("\nRun cap_math.py --season 2026-27 once you fill those in.")
+    if unknown_contracts:
+        print(f"\nContracts with unknown 2026-27 value (new signings / re-signed expirings):")
+        for name in unknown_contracts:
+            print(f"  {name}")
 
 
 if __name__ == '__main__':

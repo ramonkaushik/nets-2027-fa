@@ -13,6 +13,7 @@ export function SignModal({ player, onConfirm, onCancel }: Props) {
   const [salaryM, setSalaryM] = useState('')
   const [years,   setYears]   = useState('2')
 
+  // Input is in $M (e.g. "12.5") — convert to whole dollars for the cap math.
   const salary = parseFloat(salaryM) * 1_000_000
   const valid  = !isNaN(salary) && salary > 0 && parseInt(years) >= 1
 

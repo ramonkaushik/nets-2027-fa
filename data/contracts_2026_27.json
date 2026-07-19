@@ -1,13 +1,6 @@
 {
   "_notes": "Salaries from Spotrac July 2026. Rookie scale year-N salaries computed from 4yr total assuming 8%/yr escalation. FA deals assumed flat AAV unless structured. Two-ways at stated amounts.",
   "season": "2026-27",
-  "cap_constants": {
-    "salary_cap": 148000000,
-    "tax_line": 180500000,
-    "first_apron": 187600000,
-    "second_apron": 198400000,
-    "_note": "2026-27 cap estimated — verify against NBPA memo when released"
-  },
   "contracts": [
     {
       "name": "Michael Porter Jr.",

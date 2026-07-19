@@ -9,21 +9,19 @@ Build the 2027 free agent pool:
 Run once; subsequent runs use cache.
 """
 
-import re
 import time
-import unicodedata
 import json
 import os
 
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 
 from nba_api.stats.static import players as nba_players_static
 from db.init_db import get_connection, init_db
 from pipeline.cache import fetch_with_cache, save, load
 from pipeline.bref_stats import load_bref_stats
 from pipeline.estimated_metrics import fetch_estimated_metrics
+from pipeline.utils import normalize_name
 
 SPOTRAC_URL = 'https://www.spotrac.com/nba/free-agents/2027/'
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'}
@@ -31,11 +29,7 @@ STATS_SEASON = '2025-26'   # most recent complete season for scouting FAs
 FA_SEASON = '2026-27'       # the season after which they become FAs
 
 
-def _normalize(name: str) -> str:
-    nfkd = unicodedata.normalize('NFKD', str(name))
-    ascii_ = nfkd.encode('ascii', 'ignore').decode()
-    ascii_ = re.sub(r"\b(jr|sr|ii|iii|iv)\.?", '', ascii_, flags=re.IGNORECASE)
-    return ' '.join(ascii_.lower().split())
+_normalize = normalize_name
 
 
 def fetch_spotrac_fas() -> list[dict]:
@@ -103,7 +97,7 @@ def fetch_spotrac_fas() -> list[dict]:
 
 
 _SPOTRAC_TO_NBA_NAME = {
-    # Spotrac name → nba_api canonical name
+    # Spotrac uses legal names; nba_api uses the names printed on jerseys.
     "nah'shon hyland": 'bones hyland',
     'trey jemison':    'trey jemison iii',
 }
@@ -165,7 +159,8 @@ def run():
             unmatched_id.append(name)
             continue
 
-        # upsert player row (position from Spotrac; stats will fill age etc.)
+        # Don't overwrite position if we already have one — Nets roster entries
+        # from nets_stats.py are more reliable than Spotrac's position strings.
         conn.execute(
             """
             INSERT INTO players (id, name, position)
@@ -219,7 +214,7 @@ def run():
                     f(adv,'TS_PCT') if adv else None,
                     f(adv,'EFG_PCT') if adv else None,
                     f(adv,'USG_PCT') if adv else None,
-                    None, None, None, None,
+                    None, None, None, None,  # pts_per_75/per/bpm/vorp — filled by load_bref_stats() below
                     f(est,'E_OFF_RATING') if est else None,
                     f(est,'E_DEF_RATING') if est else None,
                     f(est,'E_NET_RATING') if est else None,

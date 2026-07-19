@@ -14,6 +14,19 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from db.init_db import get_connection
 
+# ── season config ─────────────────────────────────────────────────────────────
+# Update these each offseason: bump ROSTER_SEASON, set STATS_SEASON to the
+# last completed season, and update the cap numbers below.
+ROSTER_SEASON = '2026-27'
+STATS_SEASON  = '2025-26'
+
+CAP_2026_27 = {
+    'salary_cap':   148_000_000,
+    'tax_line':     180_500_000,
+    'first_apron':  187_600_000,
+    'second_apron': 198_400_000,
+}
+
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,7 +46,7 @@ def _sgn(v, fmt=".1f"):
 
 # ── section 1: nets roster ────────────────────────────────────────────────────
 
-def print_nets_roster(roster_season: str, stats_season: str):
+def print_nets_roster():
     conn = get_connection()
     rows = conn.execute(
         """
@@ -47,14 +60,14 @@ def print_nets_roster(roster_season: str, stats_season: str):
         LEFT JOIN stats s ON p.id = s.player_id AND s.season = ?
         ORDER BY c.salary DESC
         """,
-        (roster_season, stats_season),
+        (ROSTER_SEASON, STATS_SEASON),
     ).fetchall()
     conn.close()
 
     W = 108
     print()
     print("=" * W)
-    print(f"  BROOKLYN NETS — {roster_season} ROSTER  (stats from {stats_season} season)")
+    print(f"  BROOKLYN NETS — {ROSTER_SEASON} ROSTER  (stats from {STATS_SEASON} season)")
     print("=" * W)
     print(
         f"  {'PLAYER':<24} {'POS':<5} {'SALARY':>8}  {'OPT':<6}  "
@@ -79,22 +92,12 @@ def print_nets_roster(roster_season: str, stats_season: str):
 
 # ── section 2: cap summary ───────────────────────────────────────────────────
 
-def print_cap_summary(season: str):
-    conn = get_connection()
-    cap = conn.execute(
-        "SELECT * FROM cap_constants WHERE season=?", (season,)
-    ).fetchone()
-    if not cap:
-        conn.close()
-        print(f"  No cap constants for {season}.")
-        return
+def print_cap_summary():
+    cap = CAP_2026_27
 
+    conn = get_connection()
     contracts = conn.execute(
-        """
-        SELECT c.salary, c.years_left, c.option_type
-        FROM contracts c WHERE c.season=?
-        """,
-        (season,),
+        "SELECT salary, years_left FROM contracts WHERE season=?", (ROSTER_SEASON,),
     ).fetchall()
     conn.close()
 
@@ -104,7 +107,7 @@ def print_cap_summary(season: str):
 
     W = 108
     print("=" * W)
-    print(f"  CAP SUMMARY — {season}")
+    print(f"  CAP SUMMARY — {ROSTER_SEASON}")
     print("=" * W)
     print(f"  {'Salary cap':.<35} {_m(cap['salary_cap'])}")
     print(f"  {'Committed salary':.<35} {_m(committed)}")
@@ -120,7 +123,7 @@ def print_cap_summary(season: str):
 
 # ── section 3: 2027 FA pool ──────────────────────────────────────────────────
 
-def print_fa_pool(fa_season: str, stats_season: str, min_gp: int = 20, limit: int = 40):
+def print_fa_pool(min_gp: int = 20, limit: int = 40):
     conn = get_connection()
     rows = conn.execute(
         """
@@ -136,17 +139,17 @@ def print_fa_pool(fa_season: str, stats_season: str, min_gp: int = 20, limit: in
         ORDER BY s.bpm DESC
         LIMIT ?
         """,
-        (stats_season, fa_season, min_gp, limit),
+        (STATS_SEASON, ROSTER_SEASON, min_gp, limit),
     ).fetchall()
     total = conn.execute(
-        "SELECT COUNT(*) FROM free_agents WHERE season=?", (fa_season,)
+        "SELECT COUNT(*) FROM free_agents WHERE season=?", (ROSTER_SEASON,)
     ).fetchone()[0]
     conn.close()
 
     W = 108
     print("=" * W)
     print(f"  2027 FREE AGENT POOL  (top {limit} of {total} by BPM, min {min_gp} GP)")
-    print(f"  Stats from {stats_season} season  |  These are LEAGUE-WIDE free agents, NOT Nets players")
+    print(f"  Stats from {STATS_SEASON} season  |  These are LEAGUE-WIDE free agents, NOT Nets players")
     print("=" * W)
     print(
         f"  {'PLAYER':<24} {'POS':<5} {'TM':<5} {'TYPE':<5}  "
@@ -178,18 +181,18 @@ def rebuild():
     from pipeline.update_to_2026_27 import run as update_2026_27
     from pipeline.fa_pool_2027 import run as build_fa_pool
 
-    print("── nba_api: 2025-26 Nets stats ──")
-    load_season('2025-26')
-    print("\n── BRef: advanced stats 2025-26 ──")
-    load_bref_stats('2025-26')
-    print("\n── Contracts + cap constants ──")
-    load_contracts('2025-26')
-    load_contracts('2026-27')
-    print("\n── Estimated metrics (E_NET_RATING) ──")
-    load_estimated_metrics('2025-26')
-    print("\n── 2026-27 roster migration ──")
+    print(f"── nba_api: {STATS_SEASON} Nets stats ──")
+    load_season(STATS_SEASON)
+    print(f"\n── BRef: advanced stats {STATS_SEASON} ──")
+    load_bref_stats(STATS_SEASON)
+    print(f"\n── Contracts ──")
+    load_contracts(STATS_SEASON)
+    load_contracts(ROSTER_SEASON)
+    print(f"\n── Estimated metrics (E_NET_RATING) ──")
+    load_estimated_metrics(STATS_SEASON)
+    print(f"\n── {ROSTER_SEASON} roster migration ──")
     update_2026_27()
-    print("\n── 2027 FA pool ──")
+    print(f"\n── 2027 FA pool ──")
     build_fa_pool()
 
 
@@ -208,7 +211,6 @@ if __name__ == '__main__':
     if args.rebuild:
         rebuild()
 
-    print_nets_roster(roster_season='2026-27', stats_season='2025-26')
-    print_cap_summary(season='2026-27')
-    print_fa_pool(fa_season='2026-27', stats_season='2025-26',
-                  min_gp=args.min_gp, limit=args.fa_limit)
+    print_nets_roster()
+    print_cap_summary()
+    print_fa_pool(min_gp=args.min_gp, limit=args.fa_limit)
